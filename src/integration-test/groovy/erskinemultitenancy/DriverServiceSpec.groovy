@@ -1,6 +1,5 @@
 package erskinemultitenancy
 
-import grails.gorm.multitenancy.Tenant
 import grails.gorm.multitenancy.Tenants
 import grails.testing.mixin.integration.Integration
 import grails.testing.spock.OnceBefore
