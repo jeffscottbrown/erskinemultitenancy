@@ -32,12 +32,34 @@ class DriverServiceSpec extends Specification {
 
             vehicleService.saveVehicle focus
         }
+
+        Tenants.withId('Chevy') {
+            Vehicle chevelle = vehicleService.saveVehicle('Chevelle')
+            chevelle.addToDrivers name: 'Approved Chevy One', status: DriverStatus.APPROVED
+            chevelle.addToDrivers name: 'Inactive Chevy One', status: DriverStatus.INACTIVE
+
+            vehicleService.saveVehicle chevelle
+        }
     }
 
     void 'test retrieving drivers by status'() {
         expect:
-        driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.size() == 3
-        driverService.findAllDriversByStatus(DriverStatus.INACTIVE)?.size() == 4
-        driverService.findAllDriversByStatus(DriverStatus.PENDING)?.size() == 0
+        Tenants.withId('Ford') {
+            assert driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.size() == 3
+            assert driverService.findAllDriversByStatus(DriverStatus.INACTIVE)?.size() == 4
+            assert driverService.findAllDriversByStatus(DriverStatus.PENDING)?.size() == 0
+            assert !driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.findResult { it.name == 'Approved Chevy One' }
+            true
+        }
+
+        and: "check the chevy drivers"
+        Tenants.withId('Chevy') {
+            assert driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.size() == 1
+            assert driverService.findAllDriversByStatus(DriverStatus.INACTIVE)?.size() == 1
+            assert driverService.findAllDriversByStatus(DriverStatus.PENDING)?.size() == 0
+            assert driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.findResult { it.name == 'Approved Chevy One' }
+            true
+        }
+
     }
 }
