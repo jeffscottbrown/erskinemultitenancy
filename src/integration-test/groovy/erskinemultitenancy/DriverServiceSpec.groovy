@@ -48,6 +48,18 @@ class DriverServiceSpec extends Specification {
             assert driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.size() == 3
             assert driverService.findAllDriversByStatus(DriverStatus.INACTIVE)?.size() == 4
             assert driverService.findAllDriversByStatus(DriverStatus.PENDING)?.size() == 0
+            assert !driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.findResult { it.name == 'Approved Chevy One' }
+            true
         }
+
+        and: "check the chevy drivers"
+        Tenants.withId('Chevy') {
+            assert driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.size() == 1
+            assert driverService.findAllDriversByStatus(DriverStatus.INACTIVE)?.size() == 1
+            assert driverService.findAllDriversByStatus(DriverStatus.PENDING)?.size() == 0
+            assert driverService.findAllDriversByStatus(DriverStatus.APPROVED)?.findResult { it.name == 'Approved Chevy One' }
+            true
+        }
+
     }
 }
